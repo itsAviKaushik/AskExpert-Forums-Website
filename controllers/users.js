@@ -32,8 +32,8 @@ exports.createUser = async (req, res) => {
         if (password !== cpassword) {
             throw new Error("Password doesn't Match!");
         }
-        
-        const checkUser = await User.findOne({email: email, emailVerified: true});
+
+        const checkUser = await User.findOne({ email: email, emailVerified: true });
 
         if (checkUser) {
             throw new Error("Email Already Exists!");
@@ -136,13 +136,13 @@ exports.loginUser = async (req, res) => {
         if (!password) {
             throw new Error("Please enter a valid Password");
         }
-        
+
         const user = await User.findOne({ email: email });
-        
+
         if (!user) {
             throw new Error("Invalid Credentials!");
         }
-        
+
         let passwordMatch = await user.comparePassword(password);
 
         console.log(passwordMatch);
@@ -151,6 +151,29 @@ exports.loginUser = async (req, res) => {
             res.redirect("/")
         } else {
             throw new Error("Invalid Credentials!");
+        }
+    } catch (error) {
+        res.render("message", { message: error.message })
+    }
+}
+
+exports.checkUserId = async (req, res) => {
+    try {
+        const { userid } = req.params;
+
+        const user = await User.find({ userid: userid });
+
+        if (user.length) {
+            res.json({
+                status: false,
+                message: `UserId ${userid} already exists!`
+            })
+        }
+        else {
+            res.json({
+                status: true,
+                message: `UserId ${userid} is available!`
+            })
         }
     } catch (error) {
         res.render("message", { message: error.message })

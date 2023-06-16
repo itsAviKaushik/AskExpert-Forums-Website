@@ -21,3 +21,37 @@ function matchPassword(event) {
 
 passwordInput.addEventListener("keyup", matchPassword);
 cpasswordInput.addEventListener("keyup", matchPassword);
+
+
+
+// Check User id exists or not.
+
+async function checkUserId(event) {
+    // My Code Here...
+    console.log(event.target.value);
+
+    if (!event.target.value) {
+        document.getElementById("userid_check").style.display = "none";
+        return;
+    }
+
+    const response = await fetch(`/user/checkUserId/${event.target.value}`, {
+        method: "GET"
+    });
+
+    const data = await response.json();
+
+    if (data.status) {
+        document.getElementById("userid_check").innerHTML = data.message;
+        document.getElementById("userid_check").style.color = "green";
+        document.getElementById("userid_check").style.display = "block";
+    } else {
+        document.getElementById("userid_check").style.color = "red";
+        document.getElementById("userid_check").innerHTML = data.message;
+        document.getElementById("userid_check").style.display = "block";
+    }
+}
+
+document.getElementById("userid").addEventListener("keyup", (event)=> {
+    checkUserId(event);
+});
