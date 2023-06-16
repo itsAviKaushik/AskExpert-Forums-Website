@@ -7,8 +7,12 @@ exports.signupUser = (req, res) => {
 
 exports.createUser = async (req, res) => {
     try {
-        const { password, cpassword, email, userid, firstname, lastname } = req.body;
+        console.log(req.body)
+        const { password, cpassword, email, userid, firstname, lastname, tandc } = req.body;
 
+        if (tandc !== "on") {
+            throw new Error("Please accept the Terms & Conditions!");
+        }
         if (!password) {
             throw new Error("Please enter a valid Password!");
         }
@@ -68,7 +72,6 @@ exports.createUser = async (req, res) => {
 
         res.redirect("/user/validateOTP");
     } catch (error) {
-        console.log(error);
         res.render("message", { message: error.message })
     }
 }
