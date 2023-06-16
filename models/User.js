@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     otp: String,
-    otpExpireTime: String,
+    otpExpireTime: Date,
     dateCreated: {
         type: Date,
         default: Date.now()
@@ -38,5 +38,9 @@ userSchema.pre("save", async function(next) {
     }
     next();
 })
+
+userSchema.methods.comparePassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
+}
 
 module.exports = mongoose.model("user", userSchema);
