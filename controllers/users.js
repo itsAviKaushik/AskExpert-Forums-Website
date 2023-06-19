@@ -1,8 +1,12 @@
 const User = require("../models/User");
 const { sendMail } = require("../src/EmailEngine");
+const jwt = require("jsonwebtoken");
 
 exports.signupUser = (req, res) => {
-    res.render("signup")
+    const params = {
+        isAuthenticated: req.isAuthenticated
+    };
+    res.render("signup", params);
 }
 
 exports.createUser = async (req, res) => {
@@ -122,7 +126,10 @@ exports.showOTPForm = async (req, res) => {
 }
 
 exports.renderLogin = (req, res) => {
-    res.render("login");
+    const params = {
+        isAuthenticated: req.isAuthenticated
+    };
+    res.render("login", params);
 }
 
 exports.loginUser = async (req, res) => {
@@ -148,7 +155,9 @@ exports.loginUser = async (req, res) => {
         console.log(passwordMatch);
 
         if (passwordMatch) {
-            res.redirect("/")
+            let token = await jwt.sign(user.email, process.env.JWT_SECRET);
+            res.cookie("token", token, { httpOnly: false });
+            res.redirect("/");
         } else {
             throw new Error("Invalid Credentials!");
         }
@@ -175,6 +184,15 @@ exports.checkUserId = async (req, res) => {
                 message: `UserId ${userid} is available!`
             })
         }
+    } catch (error) {
+        res.render("message", { message: error.message })
+    }
+}
+
+exports.logoutUser = (req, res) => {
+    try {
+        res.cookie("token", null, { expiresIn: Date.now() - 10 });
+        res.redirect("/");
     } catch (error) {
         res.render("message", { message: error.message })
     }

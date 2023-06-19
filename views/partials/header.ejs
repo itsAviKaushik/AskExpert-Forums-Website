@@ -37,8 +37,12 @@
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
                 <span>
-                    <a href="/user/login" class="btn btn-primary my-1">Login</a>
-                    <a href="/user/signup" class="btn btn-success my-1">Signup</a>
+                    <% if (isAuthenticated !== undefined && isAuthenticated) { %>
+                        <a href="/user/logout" class="btn btn-primary my-1">Logout</a>
+                        <% } else { %>
+                            <a href="/user/login" class="btn btn-primary my-1">Login</a>
+                            <a href="/user/signup" class="btn btn-success my-1">Signup</a>
+                            <% } %>
                 </span>
             </div>
         </div>
