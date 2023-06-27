@@ -82,6 +82,10 @@ exports.createUser = async (req, res) => {
 
 exports.validateOTP = async (req, res, next) => {
     try {
+        const params = {
+            isAuthenticated: req.isAuthenticated
+        };
+
         if (!req.cookies.validateEmail) {
             throw new Error("Something went wrong!");
         }
@@ -106,10 +110,10 @@ exports.validateOTP = async (req, res, next) => {
             user.emailVerified = true;
 
             await user.save();
-            res.render("message", { message: "Account Created Successfully!" })
+            res.render("message", { message: "Account Created Successfully!", ...params })
         }
         else {
-            res.render("message", { message: "Invalid OTP" });
+            res.render("message", { message: "Invalid OTP", ...params });
         }
     } catch (error) {
         res.render("message", { message: error.message })
@@ -118,8 +122,11 @@ exports.validateOTP = async (req, res, next) => {
 
 exports.showOTPForm = async (req, res) => {
     try {
+        const params = {
+            isAuthenticated: req.isAuthenticated
+        };
         console.log(req.cookies);
-        res.render("otp");
+        res.render("otp", params);
     } catch (error) {
         res.render("message", { message: error.message })
     }
@@ -152,8 +159,6 @@ exports.loginUser = async (req, res) => {
 
         let passwordMatch = await user.comparePassword(password);
 
-        console.log(passwordMatch);
-
         if (passwordMatch) {
             let token = await jwt.sign(user.email, process.env.JWT_SECRET);
             res.cookie("token", token, { httpOnly: false });
@@ -162,7 +167,8 @@ exports.loginUser = async (req, res) => {
             throw new Error("Invalid Credentials!");
         }
     } catch (error) {
-        res.render("message", { message: error.message })
+        console.log(error.message);
+        res.render("message", { message: error.message, isAuthenticated: false })
     }
 }
 

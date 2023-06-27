@@ -3,7 +3,8 @@ const path = require("path");
 const dbConnect = require("./src/dbConnect");
 const { signupUser } = require("./controllers/users");
 const cookieParser = require("cookie-parser");
-const { checkAuthentication } = require("./middlewares/auth");
+const { checkAuthentication, isAuthenticated } = require("./middlewares/auth");
+const fileUpload = require("express-fileupload");
 
 require("dotenv").config({
     path: "config/.env"
@@ -16,11 +17,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(fileUpload());
 app.use(checkAuthentication);
 app.use(express.static(path.join(__dirname, "/views")));
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
+    console.log(req.isAuthenticated);
     const params = {
         isAuthenticated: req.isAuthenticated
     };
@@ -28,6 +31,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/user", require("./routes/user"))
+app.use("/question", isAuthenticated, require("./routes/question"))
 
 app.listen(process.env.PORT, () => {
     console.log(`Listening to http://localhost:${process.env.PORT}`);
