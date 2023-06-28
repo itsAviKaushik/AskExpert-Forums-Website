@@ -10,36 +10,43 @@ exports.renderQuestion = async (req, res) => {
 }
 
 exports.createQuestion = async (req, res) => {
-    const { questionTitle, questionDesc } = req.body;
+    try {
+        const { questionTitle, questionDesc } = req.body;
 
-    console.log(req.body);
-    console.log(req.files);
+        if (!questionTitle) throw new Error("Please enter a valid Question");
 
-    const question = new Question({
-        title: questionTitle,
-        description: questionDesc,
-    });
+        const question = new Question({
+            title: questionTitle,
+            description: questionDesc,
+        });
 
-    let images = [];
+        let images = [];
 
-    if (req.files.images.length) {
-        // Array Code
+        console.log(req.files);
 
-        let i = 0;
-        for (i = 0; i < req.files.images.length; i++) {
-            let result = await upload(req.files.images[i], path.join(__dirname, "../views/images/questions"), `${question._id}${i}`);
-            images.push(result);
+        if (req.files?.images) {
+            if (Array.isArray(req.files.images)) {
+                // Array Code
+
+                let i = 0;
+                for (i = 0; i < req.files.images.length; i++) {
+                    let result = await upload(req.files.images[i], path.join(__dirname, "../views/images/questions"), `${question._id}${i}`);
+                    images.push(result);
+                }
+            } else {
+                let result = await upload(req.files.images, path.join(__dirname, "../views/images/questions"), question._id);
+                // Object Code
+                images.push(result);
+            }
         }
-    } else {
-        let result = await upload(req.files.images, path.join(__dirname, "../views/images/questions"), question._id);
-        // Object Code
-        images.push(result);
+
+        question.images = images;
+        question.user = req.user;
+
+        await question.save();
+
+        res.render("message", { isAuthenticated: true, message: "Discussion Started Successfully!" })
+    } catch (error) {
+        res.render("message", { isAuthenticated: true, message: error.message })
     }
-
-    question.images = images;
-    question.user = req.user;
-
-    await question.save();
-
-    res.render("message", { isAuthenticated: true, message: "Discussion Started Successfully!" })
 }
