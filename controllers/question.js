@@ -1,4 +1,5 @@
 const Question = require("../models/Question");
+const User = require("../models/User");
 const { upload } = require("../src/fileUploader");
 const path = require("path");
 
@@ -48,5 +49,47 @@ exports.createQuestion = async (req, res) => {
         res.render("message", { isAuthenticated: true, message: "Discussion Started Successfully!" })
     } catch (error) {
         res.render("message", { isAuthenticated: true, message: error.message })
+    }
+}
+
+exports.getAllQuestions = async (req, res) => {
+    const params = {
+        isAuthenticated: req.isAuthenticated
+    }
+    try {
+        const questions = await Question.find();
+
+        params.questions = questions;
+        res.render("getAllQuestions", params);
+    } catch (error) {
+        params.message = error.message;
+        res.render("message", params);
+    }
+}
+
+exports.fetchQuestion = async (req, res) => {
+    const params = {
+        isAuthenticated: req.isAuthenticated
+    }
+
+    try {
+        const { id } = req.params;
+
+        if (!id) throw new Error("Please select a valid Question!");
+        
+        const question = await Question.findById(id);
+        
+        if (!question) throw new Error("Please select a valid Question!");
+
+        const user = await User.findById(question.user);
+
+        params.question = question;
+
+        params.user = user;
+        
+        res.render("viewQuestion", params);
+    } catch (error) {
+        params.message = error.message;
+        res.render("message", params);
     }
 }

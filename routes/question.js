@@ -1,9 +1,14 @@
-const { renderQuestion, createQuestion } = require("../controllers/question");
+const { renderQuestion, createQuestion, getAllQuestions, fetchQuestion } = require("../controllers/question");
+const { isAuthenticated } = require("../middlewares/auth");
 
 const router = require("express").Router();
 
-router.get("/ask", renderQuestion);
+router.get("/", getAllQuestions);
 
-router.post("/ask", createQuestion);
+router.get("/ask", isAuthenticated, renderQuestion);
+
+router.post("/ask", isAuthenticated, createQuestion);
+
+router.get("/:id", isAuthenticated, fetchQuestion);
 
 module.exports = router;

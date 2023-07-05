@@ -33,7 +33,7 @@ const questionSchema = new mongoose.Schema(
         },
         answers: [
             {
-                comments: {
+                comment: {
                     type: String,
                     required: true
                 },

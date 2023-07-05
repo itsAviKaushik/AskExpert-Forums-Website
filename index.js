@@ -31,7 +31,8 @@ app.get("/", (req, res) => {
 })
 
 app.use("/user", require("./routes/user"))
-app.use("/question", isAuthenticated, require("./routes/question"))
+app.use("/question", require("./routes/question"))
+app.use("/answer", require("./routes/answer"))
 
 app.listen(process.env.PORT, () => {
     console.log(`Listening to http://localhost:${process.env.PORT}`);
