@@ -85,7 +85,11 @@ exports.fetchQuestion = async (req, res) => {
 
         params.question = question;
 
-        params.user = user;
+        params.user = req.user;
+
+        question.views = parseInt(question.views) + 1;
+
+        await question.save();
         
         res.render("viewQuestion", params);
     } catch (error) {

@@ -101,7 +101,8 @@
                                         <div class="blockquote-footer" style="font-size: 16px;">Avichal Kaushik
                                         </div>
                                         <div style="font-size: 14px;" class="blockquote-footer"><cite
-                                                style="font-size: 14px;" title="Source Title"> <%- answer.dateCommented %> </cite>
+                                                style="font-size: 14px;" title="Source Title"> <%- answer.dateCommented
+                                                    %> </cite>
                                         </div>
                                     </blockquote>
                                 </div>
@@ -111,10 +112,17 @@
                                 <div class="my-2 d-flex" style="gap: 10px; flex-wrap: wrap;">
                                     <% answer.images?.forEach((image)=> { %>
                                         <div class="col-md-4">
-                                            <img src="/images/answers/<%- image?.name %>" class="img-fluid rounded-start"
-                                                style="height: 150px; width: auto;" alt="image">
+                                            <img src="/images/answers/<%- image?.name %>"
+                                                class="img-fluid rounded-start" style="height: 150px; width: auto;"
+                                                alt="image">
                                         </div>
                                         <% }) %>
+                                </div>
+                                <div>
+                                    <% if (answer?.user.toString()==user?._id.toString()) { %>
+                                        <a href="/answer/delete/<%- answer?._id %>/<%- question?._id %>"
+                                            class="btn btn-danger">Delete Comment</a>
+                                        <% } %>
                                 </div>
                             </div>
                         </div>
